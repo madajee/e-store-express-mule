@@ -1,0 +1,26 @@
+#%RAML 1.0
+title: greeting-api
+
+uses:
+  apiLib: datatypes/apilib.raml
+
+/ping:
+  get:
+    description: ping
+    queryParameters:
+      username:
+        description: username
+        type: apiLib.username
+        required: false
+      password:
+        description: password
+        type: apiLib.password
+        required: false
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            examples:
+              english: !include examples/test1.raml
+              spanish: !include examples/test2.raml
