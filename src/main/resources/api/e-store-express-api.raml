@@ -24,3 +24,43 @@ uses:
             examples:
               english: !include examples/test1.raml
               spanish: !include examples/test2.raml
+
+/register:
+  post:
+    description: register
+    body:
+        application/json:
+          type:  apiLib.regsiter
+          example: |
+            {
+              "username": "test1",
+              "password": "test"
+            }
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            examples:
+              english: !include examples/test1.raml
+              spanish: !include examples/test2.raml
+
+/login:
+  post:
+    description: login
+    body:
+        application/json:
+          type:  apiLib.login
+          example: |
+            {
+              "username": "test1",
+              "password": "test"
+            }
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            examples:
+              english: !include examples/test1.raml
+              spanish: !include examples/test2.raml
