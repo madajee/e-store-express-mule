@@ -157,7 +157,8 @@ output application/json
 ---
 {
   username: "test1",
-  password: "test"
+  password: "test",
+  name: "test1"
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>

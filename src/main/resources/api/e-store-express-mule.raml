@@ -22,8 +22,8 @@ uses:
           application/json:
             type: object
             examples:
-              english: !include examples/test1.raml
-              spanish: !include examples/test2.raml
+              example1: !include examples/test1.raml
+              example2: !include examples/test2.raml
 
 /register:
   post:
@@ -34,7 +34,8 @@ uses:
           example: |
             {
               "username": "test1",
-              "password": "test"
+              "password": "test",
+              "name": "test1"
             }
     responses:
       200:
@@ -42,8 +43,8 @@ uses:
           application/json:
             type: object
             examples:
-              english: !include examples/test1.raml
-              spanish: !include examples/test2.raml
+              example1: !include examples/register/test1.raml
+              example2: !include examples/register/test2.raml
 
 /login:
   post:
@@ -62,5 +63,5 @@ uses:
           application/json:
             type: object
             examples:
-              english: !include examples/test1.raml
-              spanish: !include examples/test2.raml
+              example1: !include examples/test1.raml
+              example2: !include examples/test2.raml
