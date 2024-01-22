@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<sub-flow name="encryptPassword" doc:id="4686d742-64e8-4354-8345-ae3d66b42a79" >
+		<logger level="INFO" doc:name="Logger" doc:id="08ffea5a-001c-4069-9e81-b0e04359d097" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "username: " ++ vars.username as String ++ " " ++ "password1: " ++ vars.password as String&#10;---&#10;log_trail]'/>
+		<set-variable value='#[%dw 2.0&#10;import dw::Crypto&#10;output application/json&#10;---&#10;Crypto::SHA1(vars.password as String as Binary)]' doc:name="Set Variable" doc:id="fce2b1eb-851f-44e7-9c5b-80ec8ff02321" variableName="hashedpwd"/>
+		<logger level="INFO" doc:name="Logger" doc:id="83a04ba5-fcfc-4f71-9f5a-dd2f84f3bedc" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "hashedpwd: " ++ vars.hashedpwd as String&#10;---&#10;log_trail]'/>
+	</sub-flow>
+	</mule>

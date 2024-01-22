@@ -137,6 +137,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\login:application\json:e-store-express-mule-config">
+
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -150,6 +151,19 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\register:application\json:e-store-express-mule-config">
+       <ee:transform doc:name="set-variables" doc:id="667bff0e-b48a-4ffb-853a-3130a3a0c1cb" >
+			<ee:variables >
+				<ee:set-variable variableName="username" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.username]]></ee:set-variable>
+				<ee:set-variable variableName="password" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.password]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="encryptPassword" doc:id="cba65c2d-aa88-4553-8f98-d16bea175cb7" name="encryptPassword"/>
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
