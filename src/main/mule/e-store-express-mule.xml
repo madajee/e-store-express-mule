@@ -123,7 +123,9 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\ping:e-store-express-mule-config">
-        <ee:transform doc:name="Transform Message">
+        <set-variable value="${secure::client.secret}" doc:name="Set Variable" doc:id="ad3f416c-6195-4e14-8dbb-e440b7b560fc" variableName="sensitiveprop"/>
+		<logger level="INFO" doc:name="Logger" doc:id="893f1fb5-2544-49f4-8c43-a8e2ad4a68bd" message="#[vars.sensitiveprop]"/>
+		<ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -176,7 +178,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\deleteuser:application\json:e-store-express-mule-config">
-		<oauth2-provider:delete-client doc:name="Delete client" doc:id="2d7757d5-608d-4e5f-a4cc-6d27b7c909c1" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" secret="#[attributes.headers.client_Secret]"/>
+		<oauth2-provider:delete-client doc:name="Delete client" doc:id="2d7757d5-608d-4e5f-a4cc-6d27b7c909c1" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" secret="${secure::client.secret}"/>
 		<ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
