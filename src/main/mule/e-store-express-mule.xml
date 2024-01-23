@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <http:listener-config name="e-store-express-mule-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
+<mule xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd">
+
     <apikit:config name="e-store-express-mule-config" api="e-store-express-mule.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="e-store-express-mule-main">
         <http:listener config-ref="e-store-express-mule-httpListenerConfig" path="/api/*">
@@ -137,7 +136,6 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\login:application\json:e-store-express-mule-config">
-
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -151,19 +149,19 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\register:application\json:e-store-express-mule-config">
-       <ee:transform doc:name="set-variables" doc:id="667bff0e-b48a-4ffb-853a-3130a3a0c1cb" >
-			<ee:variables >
-				<ee:set-variable variableName="username" ><![CDATA[%dw 2.0
+        <ee:transform doc:name="set-variables" doc:id="667bff0e-b48a-4ffb-853a-3130a3a0c1cb">
+            <ee:variables>
+                <ee:set-variable variableName="username"><![CDATA[%dw 2.0
 output application/java
 ---
 payload.username]]></ee:set-variable>
-				<ee:set-variable variableName="password" ><![CDATA[%dw 2.0
+                <ee:set-variable variableName="password"><![CDATA[%dw 2.0
 output application/java
 ---
 payload.password]]></ee:set-variable>
-			</ee:variables>
-		</ee:transform>
-		<flow-ref doc:name="encryptPassword" doc:id="cba65c2d-aa88-4553-8f98-d16bea175cb7" name="encryptPassword"/>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="encryptPassword" doc:id="cba65c2d-aa88-4553-8f98-d16bea175cb7" name="encryptPassword" />
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -176,5 +174,33 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+    </flow>
+    <flow name="post:\deleteuser:application\json:e-store-express-mule-config">
+		<oauth2-provider:delete-client doc:name="Delete client" doc:id="2d7757d5-608d-4e5f-a4cc-6d27b7c909c1" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" secret="#[attributes.headers.client_Secret]"/>
+		<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  username: payload.username,
+  name: payload.name
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="00c60189-8eb5-487d-bdc2-02c43893a2af" type="OAUTH2-PROVIDER:NO_SUCH_CLIENT">
+			<ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": error.description
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+            </ee:transform>
+			</on-error-propagate>
+		</error-handler>
     </flow>
 </mule>

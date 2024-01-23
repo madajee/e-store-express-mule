@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+<mule xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd">
+	<os:object-store name="client_objectStore" doc:name="Object store" doc:id="82208f88-e768-4d6d-b94c-04424cf1a79b" />
+	<os:object-store name="tokenobjectStore" doc:name="Object store" doc:id="50fe36e9-486a-4a8c-b66c-ad5064eff442" />
+	<oauth2-provider:config name="OAuth2_Provider_Config" doc:name="OAuth2 Provider Config" doc:id="0cb801b8-ee2a-44a4-97e4-b4699f645d5e" providerName="Oauth2_Provider_Config" listenerConfig="e-store-express-mule-httpListenerConfig" clientStore="client_objectStore" supportedGrantTypes="CLIENT_CREDENTIALS" >
+		<oauth2-provider:token-config tokenStore="tokenobjectStore" />
+	</oauth2-provider:config>
 	<sub-flow name="encryptPassword" doc:id="4686d742-64e8-4354-8345-ae3d66b42a79" >
 		<logger level="INFO" doc:name="Logger" doc:id="08ffea5a-001c-4069-9e81-b0e04359d097" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "username: " ++ vars.username as String ++ " " ++ "password1: " ++ vars.password as String&#10;---&#10;log_trail]'/>
 		<set-variable value='#[%dw 2.0&#10;import dw::Crypto&#10;output application/json&#10;---&#10;Crypto::SHA1(vars.password as String as Binary)]' doc:name="Set Variable" doc:id="fce2b1eb-851f-44e7-9c5b-80ec8ff02321" variableName="hashedpwd"/>
