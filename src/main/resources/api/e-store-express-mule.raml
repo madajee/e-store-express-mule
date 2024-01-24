@@ -68,6 +68,12 @@ uses:
 /deleteuser:
   post:
     description: delete
+    headers: 
+      Authorization: 
+        displayName: Authorization
+        description: Bearer Token
+        type: string
+        required: true
     body:
         application/json:
           type:  apiLib.deleteuser
@@ -83,3 +89,19 @@ uses:
             type: object
             examples:
               example1: !include examples/deleteuser/test1.raml
+/getuser:
+  get:
+    description: getuser
+    headers: 
+      Authorization: 
+        displayName: Authorization
+        description: Bearer Token
+        type: string
+        required: true
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            examples:
+              example1: !include examples/getuser/test1.raml
