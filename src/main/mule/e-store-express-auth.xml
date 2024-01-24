@@ -1,18 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns:os="http://www.mulesoft.org/schema/mule/os"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
-http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd">
+http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<os:object-store name="client_objectStore" doc:name="Object store" doc:id="82208f88-e768-4d6d-b94c-04424cf1a79b" />
 	<os:object-store name="tokenobjectStore" doc:name="Object store" doc:id="50fe36e9-486a-4a8c-b66c-ad5064eff442" />
 	<oauth2-provider:config name="OAuth2_Provider_Config" doc:name="OAuth2 Provider Config" doc:id="0cb801b8-ee2a-44a4-97e4-b4699f645d5e" providerName="Oauth2_Provider_Config" listenerConfig="e-store-express-mule-httpListenerConfig" clientStore="client_objectStore" supportedGrantTypes="CLIENT_CREDENTIALS" >
 		<oauth2-provider:token-config tokenStore="tokenobjectStore" />
 	</oauth2-provider:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="41e97492-fba2-4d06-a1be-5b3f8c5d5c18" >
+		<http:request-connection host="${http.listener.host}" port="${http.listener.port}" />
+	</http:request-config>
 	<sub-flow name="encryptPassword" doc:id="4686d742-64e8-4354-8345-ae3d66b42a79" >
 		<logger level="INFO" doc:name="Logger" doc:id="08ffea5a-001c-4069-9e81-b0e04359d097" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "username: " ++ vars.username as String ++ " " ++ "password1: " ++ vars.password as String&#10;---&#10;log_trail]'/>
 		<set-variable value='#[%dw 2.0&#10;import dw::Crypto&#10;output application/json&#10;---&#10;Crypto::SHA1(vars.password as String as Binary)]' doc:name="Set Variable" doc:id="fce2b1eb-851f-44e7-9c5b-80ec8ff02321" variableName="hashedpwd"/>
 		<logger level="INFO" doc:name="Logger" doc:id="83a04ba5-fcfc-4f71-9f5a-dd2f84f3bedc" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "hashedpwd: " ++ vars.hashedpwd as String&#10;---&#10;log_trail]'/>
+	</sub-flow>
+	<sub-flow name="deleteuser" doc:id="61f4a7e9-5643-4c2e-9b15-3411339bb3c0" >
+		<oauth2-provider:delete-client doc:name="Delete client" doc:id="8471128e-4a6d-47e6-9c97-8ac01bda8705" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" secret="${secure::client.secret}"/>
+	</sub-flow>
+	<sub-flow name="createuser" doc:id="b597593e-7986-4ad9-9f32-24a1a8f8a995" >
+		<oauth2-provider:create-client doc:name="Create client" doc:id="13f5cdec-e6a6-49c0-899e-e8f5c64a5833" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" type="CONFIDENTIAL" secret="${secure::client.secret}" clientName="#[payload.name]" redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true" description='#[""]' principal='#[""]'/>
+	</sub-flow>
+	<sub-flow name="generateAccessToken" doc:id="ddfb1802-3aa6-4948-8dc3-14b348003b13" >
+		<http:request method="POST" doc:name="Request" doc:id="d20aa6ce-e15d-4e8e-85e5-fabc6bf0507b" path="/token" config-ref="HTTP_Request_configuration">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"client_id" : payload.username,
+	"client_secret" : "${secure::client.secret}",
+	"grant_type": "CLIENT_CREDENTIALS"
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="e73eeeb6-bb0c-4e0b-a686-93d4a38d360d" message="#[payload]"/>
 	</sub-flow>
 	</mule>

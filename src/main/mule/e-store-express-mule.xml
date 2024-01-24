@@ -164,21 +164,23 @@ payload.password]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="encryptPassword" doc:id="cba65c2d-aa88-4553-8f98-d16bea175cb7" name="encryptPassword" />
+        <flow-ref doc:name="createuser" doc:id="5b46e014-f3f8-4f66-86ce-b98fb78dffb7" name="createuser"/>
         <ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  username: "test1",
-  password: "test",
-  name: "test1"
+  username: payload.username,
+  message: "success",
+  name: payload.name
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
     </flow>
     <flow name="post:\deleteuser:application\json:e-store-express-mule-config">
-		<oauth2-provider:delete-client doc:name="Delete client" doc:id="2d7757d5-608d-4e5f-a4cc-6d27b7c909c1" config-ref="OAuth2_Provider_Config" clientId="#[payload.username]" secret="${secure::client.secret}"/>
+		
+		<flow-ref doc:name="deleteuser" doc:id="f7ca588a-8f20-4cea-9bba-a640f5310150" name="deleteuser"/>
 		<ee:transform doc:name="Transform Message">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
