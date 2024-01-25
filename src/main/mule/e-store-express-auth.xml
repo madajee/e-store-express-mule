@@ -21,7 +21,16 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<logger level="INFO" doc:name="Logger" doc:id="83a04ba5-fcfc-4f71-9f5a-dd2f84f3bedc" message='#[%dw 2.0&#10;output application/json&#10;var log_trail = "hashedpwd: " ++ vars.hashedpwd as String&#10;---&#10;log_trail]'/>
 	</sub-flow>
 	<sub-flow name="deleteuser" doc:id="61f4a7e9-5643-4c2e-9b15-3411339bb3c0" >
-		<oauth2-provider:delete-client doc:name="Delete client" doc:id="8471128e-4a6d-47e6-9c97-8ac01bda8705" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" secret="${secure::client.secret}"/>
+		 <flow-ref doc:name="validateuser" doc:id="b16d94c9-3e61-4ce1-be6d-7e6a10e3b731" name="validateuser" />
+		<choice doc:name="Choice" doc:id="5549f045-18d2-41b6-b9c7-2d27aaa78fb6" >
+			<when expression="#[vars.username == payload.client_id]">
+				<oauth2-provider:delete-client doc:name="Delete client" doc:id="8471128e-4a6d-47e6-9c97-8ac01bda8705" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" secret="${secure::client.secret}" />
+				<logger level="INFO" doc:name="Logger" doc:id="4257533e-7c35-42d3-b7f4-f5bfac2106f9" message="#['delete client success for ' ++  vars.username]"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="ca854c82-53f6-4734-9a46-ee03658ffbe1" message="#['delete client failed for ' ++  vars.username]"/>
+			</otherwise>
+		</choice>
 	</sub-flow>
 	<sub-flow name="createuser" doc:id="b597593e-7986-4ad9-9f32-24a1a8f8a995" >
 		<oauth2-provider:create-client doc:name="Create client" doc:id="13f5cdec-e6a6-49c0-899e-e8f5c64a5833" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" type="CONFIDENTIAL" secret="${secure::client.secret}" clientName="#[vars.name]" redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true" description='#[""]' principal='#[""]'/>
@@ -41,16 +50,5 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="validateuser" doc:id="f4d6bde2-40d5-40d7-b07d-03b228da9e3f" >
 		<oauth2-provider:validate-token doc:name="Validate token" doc:id="0fb45109-a100-42c9-8b63-867386936d2f" config-ref="OAuth2_Provider_Config"/>
 		<logger level="INFO" doc:name="Logger" doc:id="06ffae40-4846-46a9-adb1-7241ee1c3231" message="#[payload]"/>
-        <ee:transform doc:name="Transform Message">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "success",
-  loggedin: payload.client_id
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
 	</sub-flow>
 	</mule>

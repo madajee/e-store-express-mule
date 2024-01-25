@@ -225,5 +225,16 @@ output application/json
     <flow name="get:\getuser:e-store-express-mule-config">
         <logger level="INFO" message="get:\getuser:e-store-express-mule-config" />
         <flow-ref doc:name="validateuser" doc:id="a00dbca0-127f-4dd1-bdae-b8b49c5919b2" name="validateuser" />
+                <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "success",
+  loggedin: payload.client_id
+} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
 </mule>
