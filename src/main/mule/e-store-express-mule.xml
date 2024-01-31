@@ -138,6 +138,9 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<async doc:name="Async" doc:id="064080f7-efbb-4aeb-a655-83e514b51597" >
+			<flow-ref doc:name="register-userq" doc:id="b75f7c6d-8727-4e53-912e-a6a9e1284ea7" name="register-userq"/>
+		</async>
     </flow>
     <flow name="post:\deleteuser:application\json:e-store-express-mule-config">
         <ee:transform doc:name="set-variables" doc:id="73a7dae8-d1d2-4af7-b700-78f2f13850df">
