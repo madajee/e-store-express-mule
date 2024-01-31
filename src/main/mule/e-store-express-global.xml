@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:oauth2-provider="http://www.mulesoft.org/schema/mule/oauth2-provider" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
 	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/oauth2-provider http://www.mulesoft.org/schema/mule/oauth2-provider/current/mule-oauth2-provider.xsd
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
 http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
 	<http:listener-config name="e-store-express-mule-httpListenerConfig">
         <http:listener-connection host="${http.listener.host}" port="${http.listener.port}" />
@@ -13,4 +18,13 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="ae5f4908-0cf0-4692-ac16-f84abbe824f8" file="config/config-${env}.yaml" key="${encryption.key}" >
 		<secure-properties:encrypt algorithm="Blowfish" />
 	</secure-properties:config>
+	<os:object-store name="client_objectStore" doc:name="Object store" doc:id="77f1ebe3-5ebe-4d6b-926f-9a1edfcc10e3" />
+	<os:object-store name="tokenobjectStore" doc:name="Object store" doc:id="452fd53b-788c-4377-9e9d-ea8a69b98fa8" />
+	<oauth2-provider:config name="OAuth2_Provider_Config" doc:name="OAuth2 Provider Config" doc:id="75e593d3-9ee6-4eec-a0f1-c5bf2d891ea3" providerName="Oauth2_Provider_Config" listenerConfig="e-store-express-mule-httpListenerConfig" clientStore="client_objectStore" supportedGrantTypes="CLIENT_CREDENTIALS" >
+		<oauth2-provider:token-config tokenStore="tokenobjectStore" />
+	</oauth2-provider:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="2237d609-cc02-4180-9759-e938f6e6218e" >
+		<http:request-connection host="${http.listener.host}" port="${http.listener.port}" />
+	</http:request-config>
+	<apikit:config name="e-store-express-mule-config" api="e-store-express-mule.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 </mule>
