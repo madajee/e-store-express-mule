@@ -34,4 +34,5 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 			<vm:queue queueName="userq" />
 		</vm:queues>
 	</vm:config>
+	<configuration doc:name="Configuration" doc:id="5cd8e979-aa02-4404-80c7-408cc7aff84c" defaultErrorHandler-ref="commonErrorHandler" />
 </mule>

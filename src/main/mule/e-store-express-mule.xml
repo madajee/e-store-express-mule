@@ -168,20 +168,6 @@ output application/json
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <error-handler>
-            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="00c60189-8eb5-487d-bdc2-02c43893a2af" type="OAUTH2-PROVIDER:NO_SUCH_CLIENT">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  "message": error.description
-} as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
-                    </ee:message>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
     </flow>
     <flow name="get:\getuser:e-store-express-mule-config">
         <logger level="INFO" message="get:\getuser:e-store-express-mule-config" />

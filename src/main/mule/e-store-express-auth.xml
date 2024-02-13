@@ -16,11 +16,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		 <flow-ref doc:name="validateuser" doc:id="b16d94c9-3e61-4ce1-be6d-7e6a10e3b731" name="validateuser" />
 		<choice doc:name="Choice" doc:id="5549f045-18d2-41b6-b9c7-2d27aaa78fb6" >
 			<when expression="#[vars.username == payload.client_id]">
-				<oauth2-provider:delete-client doc:name="Delete client" doc:id="8471128e-4a6d-47e6-9c97-8ac01bda8705" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" secret="${secure::client.secret}" />
+				<oauth2-provider:delete-client doc:name="Delete client" doc:id="8471128e-4a6d-47e6-9c97-8ac01bda8705" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" secret="${secure::client.secret}">
+					<error-mapping sourceType="OAUTH2-PROVIDER:NO_SUCH_CLIENT" targetType="APP:ESTOREAPI" />
+				</oauth2-provider:delete-client>
 				<logger level="INFO" doc:name="Logger" doc:id="4257533e-7c35-42d3-b7f4-f5bfac2106f9" message="#['delete client success for ' ++  vars.username]"/>
 			</when>
 			<otherwise >
 				<logger level="INFO" doc:name="Logger" doc:id="ca854c82-53f6-4734-9a46-ee03658ffbe1" message="#['delete client failed for ' ++  vars.username]"/>
+				<raise-error doc:name="Raise error" doc:id="cd0f3021-e87c-4d1c-a380-ba407fdf3325" type="APP:NO_SUCH_CLIENT"/>
 			</otherwise>
 		</choice>
 	</sub-flow>
@@ -40,7 +43,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<logger level="INFO" doc:name="Logger" doc:id="e73eeeb6-bb0c-4e0b-a686-93d4a38d360d" message="#[payload]"/>
 	</sub-flow>
 	<sub-flow name="validateuser" doc:id="f4d6bde2-40d5-40d7-b07d-03b228da9e3f" >
-		<oauth2-provider:validate-token doc:name="Validate token" doc:id="0fb45109-a100-42c9-8b63-867386936d2f" config-ref="OAuth2_Provider_Config"/>
+		<oauth2-provider:validate-token doc:name="Validate token" doc:id="0fb45109-a100-42c9-8b63-867386936d2f" config-ref="OAuth2_Provider_Config">
+			<error-mapping sourceType="OAUTH2-PROVIDER:TOKEN_UNAUTHORIZED" targetType="APP:ESTOREAPI" />
+		</oauth2-provider:validate-token>
 		<logger level="INFO" doc:name="Logger" doc:id="06ffae40-4846-46a9-adb1-7241ee1c3231" message="#[payload]"/>
 	</sub-flow>
 	</mule>
