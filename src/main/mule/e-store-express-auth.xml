@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			</when>
 			<otherwise >
 				<logger level="INFO" doc:name="Logger" doc:id="ca854c82-53f6-4734-9a46-ee03658ffbe1" message="#['delete client failed for ' ++  vars.username]"/>
-				<raise-error doc:name="Raise error" doc:id="cd0f3021-e87c-4d1c-a380-ba407fdf3325" type="APP:NO_SUCH_CLIENT"/>
+				<raise-error doc:name="Raise error" doc:id="cd0f3021-e87c-4d1c-a380-ba407fdf3325" type="APPERROR:NO_SUCH_CLIENT"/>
 			</otherwise>
 		</choice>
 	</sub-flow>

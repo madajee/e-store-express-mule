@@ -5,65 +5,26 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<error-handler name="commonErrorHandler" doc:id="32b73e67-22fb-4afb-a085-f3347c83ea7d" >
-		<on-error-propagate  enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="309d5a67-aa4b-4081-8276-e284e8b73b74" type="APP:NO_SUCH_CLIENT">
-			<ee:transform doc:name="Transform Message" doc:id="4056b50f-112f-4c9d-a6b5-45f3dad201b6" >
+		<on-error-propagate  enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="309d5a67-aa4b-4081-8276-e284e8b73b74" type="APPERROR:NO_SUCH_CLIENT">
+			<ee:transform doc:name="error_canonical" doc:id="4056b50f-112f-4c9d-a6b5-45f3dad201b6" >
 				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"response": {
-		"status": "failedtest",
-		"error": {
-			"description": error.description,
-			"type": error.errorType.namespace ++':' ++ error.errorType.identifier,
-			"cause": error.cause.message
-			
-		}
-	}
-}]]></ee:set-payload>
+					<ee:set-payload resource="dwl/error_canonical.dwl"/>
 				</ee:message>
 			</ee:transform>
 			<logger level="INFO" doc:name="Logger" doc:id="e40b00f4-2967-44c8-81d4-7bbf31a41593" message="#[output application/json --- payload]"/>
 		</on-error-propagate>
 		<on-error-propagate  enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5daf33a7-8b32-4a0e-8bc1-bd96ac1dec9d" type="APP:ESTOREAPI">
-			<ee:transform doc:name="Transform Message" doc:id="7696b90e-e242-4daa-9444-1fcf5d18d28b" >
+			<ee:transform doc:name="error_canonical" doc:id="7696b90e-e242-4daa-9444-1fcf5d18d28b" >
 				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"response": {
-		"status": "failedtest",
-		"error": {
-			"description": error.description,
-			"type": error.cause['type'],
-			"cause": error.cause.message
-			
-		}
-	}
-}]]></ee:set-payload>
+					<ee:set-payload resource="dwl/error_canonical.dwl"/>
 				</ee:message>
 			</ee:transform>
 			<logger level="INFO" doc:name="Logger" doc:id="fec47f7c-2239-4bcc-9c56-b16140054bdf" message="#[output application/json --- payload]"/>
 		</on-error-propagate>
 		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7131d239-b1bc-4187-8f09-a03e62f933a0" type="ANY">
-			<ee:transform doc:name="Transform Message" doc:id="785922a4-6f01-483f-be86-17d1201c23b0" >
+			<ee:transform doc:name="error_canonical" doc:id="785922a4-6f01-483f-be86-17d1201c23b0" >
 				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	"response": {
-		"status": "failed",
-		"error": {
-			"description": error.description,
-			"type": error.cause['type'],
-			"cause": error.cause.message
-			
-		}
-	}
-}]]></ee:set-payload>
+					<ee:set-payload resource="dwl/error_canonical.dwl"/>
 				</ee:message>
 			</ee:transform>
 			<logger level="INFO" doc:name="Logger" doc:id="6c5128a1-3380-4e8f-acb4-d5afc4c029fd" message="#[output application/json --- payload]"/>
