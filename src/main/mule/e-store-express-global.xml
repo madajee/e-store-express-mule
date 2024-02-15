@@ -32,6 +32,7 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 	<vm:config name="VM_Config" doc:name="VM Config" doc:id="7f3a4a97-b214-4e10-87fb-dd861b83cbe6" >
 		<vm:queues >
 			<vm:queue queueName="userq" />
+			<vm:queue queueName="errorq" />
 		</vm:queues>
 	</vm:config>
 	<configuration doc:name="Configuration" doc:id="5cd8e979-aa02-4404-80c7-408cc7aff84c" defaultErrorHandler-ref="commonErrorHandler" />
