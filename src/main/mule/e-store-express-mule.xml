@@ -93,7 +93,8 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\ping:e-store-express-mule-config">
-        <set-variable value="${secure::client.secret}" doc:name="Set Variable" doc:id="ad3f416c-6195-4e14-8dbb-e440b7b560fc" variableName="sensitiveprop" />
+        <flow-ref doc:name="correlationIdSubflow" doc:id="7cede556-0dad-4ee2-a8ee-5f274f40e29c" name="correlationIdSubflow"/>
+		<set-variable value="${secure::client.secret}" doc:name="Set Variable" doc:id="ad3f416c-6195-4e14-8dbb-e440b7b560fc" variableName="sensitiveprop" />
         <logger level="INFO" doc:name="Logger" doc:id="893f1fb5-2544-49f4-8c43-a8e2ad4a68bd" message="#[vars.sensitiveprop]" />
         <ee:transform doc:name="Transform Message">
             <ee:message>
@@ -102,7 +103,8 @@ output application/json
 ---
 {
   username: "test1",
-  password: "test"
+  password: "test",
+  transactionId: vars.transactionId
 } as Object {encoding: "UTF-8", mediaType: "application/json"}]]></ee:set-payload>
             </ee:message>
         </ee:transform>

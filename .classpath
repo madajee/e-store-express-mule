@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="MULE_LIB/org.mule.modules/mule-tracing-module/1.0.0"/>
 	<classpathentry kind="con" path="MULE_LIB/org.mule.connectors/mule-vm-connector/2.0.0"/>
 	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.modules/mule-secure-configuration-property-module/1.2.6"/>
 	<classpathentry kind="con" path="MULE_LIB/com.mulesoft.modules/mule-oauth2-provider-module/1.0.12"/>

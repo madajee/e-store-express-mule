@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:tracing="http://www.mulesoft.org/schema/mule/tracing" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/tracing http://www.mulesoft.org/schema/mule/tracing/current/mule-tracing.xsd">
 	<flow name="publish-user-qFlow" doc:id="75b603fb-eaf1-4b4a-acaf-f9cb8a8ccee2" >
 		<vm:publish doc:name="Publish" doc:id="fd040b00-dead-4a14-9a61-6dfa04d66d9d" config-ref="VM_Config" queueName="userq" sendCorrelationId="AUTO">
 			<vm:content ><![CDATA[#[vars.msguserq]]]></vm:content>
 		</vm:publish>
 	</flow>
 	<sub-flow name="register-userq" doc:id="653a0360-5ffc-4e99-8696-f9a496b89ab3" >
-		<ee:transform doc:name="Transform Message" doc:id="2d40ad15-e0b4-4cd5-8d05-e736c8c93461" >
-			<ee:message >
+		<tracing:with-correlation-id doc:name="With CorrelationID" doc:id="846aa801-d6b1-4a3b-8feb-81ee99e2746b" correlationId="#[correlationId ++ '-' ++ payload.name]">
+			<set-variable value="#[correlationId]" doc:name="Set Variable" doc:id="2257f09d-b59b-4d49-961d-92541cefd5ea" variableName="transactionId"/>
+			<ee:transform doc:name="Transform Message" doc:id="2d40ad15-e0b4-4cd5-8d05-e736c8c93461">
+			<ee:message>
 			</ee:message>
-			<ee:variables >
-				<ee:set-variable variableName="msguserq" ><![CDATA[%dw 2.0
+			<ee:variables>
+				<ee:set-variable variableName="msguserq"><![CDATA[%dw 2.0
 output application/json
 ---
 {
+	"transactionId": vars.transactionId,
 	"msgtype": "register",
 	"message": {
 		"username": payload.username,
@@ -28,6 +32,7 @@ output application/json
 }]]></ee:set-variable>
 			</ee:variables>
 		</ee:transform>
+		</tracing:with-correlation-id>
 		<flow-ref doc:name="publish-user-qFlow" doc:id="19c16a07-7b3c-47c1-a18f-d25fcd677148" name="publish-user-qFlow"/>
 	</sub-flow>
 	<flow name="vm-listeningFlow" >
