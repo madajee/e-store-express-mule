@@ -124,6 +124,14 @@ payload.password]]></ee:set-variable>
 output application/java
 ---
 payload.name]]></ee:set-variable>
+                <ee:set-variable variableName="transactionId"><![CDATA[%dw 2.0
+output application/java
+---
+correlationId]]></ee:set-variable>
+                <ee:set-variable variableName="msgtype"><![CDATA[%dw 2.0
+output application/java
+---
+'register']]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="encryptPassword" doc:id="cba65c2d-aa88-4553-8f98-d16bea175cb7" name="encryptPassword" />

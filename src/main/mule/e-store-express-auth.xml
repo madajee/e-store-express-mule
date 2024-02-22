@@ -28,7 +28,9 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		</choice>
 	</sub-flow>
 	<sub-flow name="createuser" doc:id="b597593e-7986-4ad9-9f32-24a1a8f8a995" >
-		<oauth2-provider:create-client doc:name="Create client" doc:id="13f5cdec-e6a6-49c0-899e-e8f5c64a5833" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" type="CONFIDENTIAL" secret="${secure::client.secret}" clientName="#[vars.name]" redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true" description='#[""]' principal='#[""]'/>
+		<oauth2-provider:create-client doc:name="Create client" doc:id="13f5cdec-e6a6-49c0-899e-e8f5c64a5833" config-ref="OAuth2_Provider_Config" clientId="#[vars.username]" type="CONFIDENTIAL" secret="${secure::client.secret}" clientName="#[vars.name]" redirectUris='#[["abc.com"]]' authorizedGrantTypes='#[["CLIENT_CREDENTIALS"]]' failIfPresent="true" description='#[""]' principal='#[""]'>
+			<error-mapping sourceType="OAUTH2-PROVIDER:CLIENT_ALREADY_EXISTS" targetType="APPERROR:CLIENT_ALREADY_EXISTS" />
+		</oauth2-provider:create-client>
 	</sub-flow>
 	<sub-flow name="generateAccessToken" doc:id="ddfb1802-3aa6-4948-8dc3-14b348003b13" >
 		<http:request method="POST" doc:name="Request" doc:id="d20aa6ce-e15d-4e8e-85e5-fabc6bf0507b" path="/token" config-ref="HTTP_Request_configuration">

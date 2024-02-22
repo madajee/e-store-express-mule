@@ -15,6 +15,14 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 			</ee:transform>
 			<flow-ref doc:name="publish-errorq-subflow" doc:id="fd5053a8-6362-4452-bf82-ea7a79cb6ba2" name="publish-errorq-subflow"/>
 		</on-error-propagate>
+		<on-error-propagate  enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ebd1cfb0-0fdf-4b3c-9757-2e01a3cc6dbf" type="APPERROR:CLIENT_ALREADY_EXISTS">
+			<ee:transform doc:name="error_canonical" doc:id="cfb83ac5-6ca2-4177-a6ee-f2038d838e1b" >
+				<ee:message >
+					<ee:set-payload resource="dwl/error_canonical.dwl"/>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="publish-errorq-subflow" doc:id="579dd4ae-d0ce-43db-a8d5-0408754e6e61" name="publish-errorq-subflow"/>
+		</on-error-propagate>
 		<on-error-propagate  enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5daf33a7-8b32-4a0e-8bc1-bd96ac1dec9d" type="APP:ESTOREAPI">
 			<ee:transform doc:name="error_canonical" doc:id="7696b90e-e242-4daa-9444-1fcf5d18d28b" >
 				<ee:message >
